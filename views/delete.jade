@@ -1,0 +1,13 @@
+h1 Which Task is Complete?
+
+p Input task name into box below
+
+ul
+  each item in items
+    li #{item.name}
+
+
+form(method="POST", action="/ToDo/kill")
+  input(type="hidden", name="_method", value="DELETE")
+  input#name(type="text", name="name")
+  button(type="submit") Check er Off!

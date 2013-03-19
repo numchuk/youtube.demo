@@ -1,0 +1,82 @@
+
+/**
+ * Module dependencies.
+ */
+
+var express = require('express'),
+    mongoose = require('mongoose'),
+    http = require('http');
+
+var app = express();
+
+app.configure(function(){
+  app.set('port', process.env.PORT || 3000);
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname, 'public'));
+});
+
+mongoose.connect("mongodb://localhost/ToDoApp");
+
+var ItemSchema = new mongoose.Schema({
+	name: String
+}),
+    	Items = mongoose.model('Items', ItemSchema);
+
+// Main Page - SHOW
+app.get("/ToDo", function(req, res){
+	Items.find({}, function(err, docs){
+		res.render('list', {items:docs});
+	});
+});
+
+// Redirect Root Dir to ToDo page... just for fun
+app.get("/", function(req, res){
+	res.redirect("/ToDo/");
+});
+
+// ADD TASKS
+app.get('/ToDo/addTask', function(req, res){
+	res.render('add');
+});
+
+// CREATE
+app.post('/ToDo', function(req, res){
+	var b = req.body;
+	new Items({
+		name: b.name
+	}).save(function(err, item){
+		if (err) res.json(err);
+		res.redirect('/ToDo/');
+	});
+});
+
+app.param('name', function(req, res, next, name){
+	Items.find({name: name}, function(err, docs){
+		req.item = docs[0];
+		next();
+	});
+});
+
+// CHECK OFF TASK PAGE
+app.get('/ToDo/checkOff', function(req, res){
+	Items.find({}, function(err, docs){
+		res.render('delete', {items:docs});
+	});
+});
+
+// DESTROY
+app.delete('/ToDo/kill', function(req, res){
+	Items.remove({ name: req.body.name}, function(err) {
+		res.redirect("/ToDo");
+	});
+});
+
+
+http.createServer(app).listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
+});

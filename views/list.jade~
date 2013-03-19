@@ -1,0 +1,15 @@
+h1 To Do A.S.A.P[izzle]:
+
+ul
+  each item in items
+   li #{item.name}
+
+form(action="/ToDo/addTask")
+  p: button(type="submit") Add Item
+
+form(action="/ToDo/checkOff")
+  p: button(type="submit") Check Off Item
+
+form(methodo="POST", action="/toDo/clear")
+  input(type="hidden", name="_method", value="DELETE")
+  button(type="submit") Clear Entire List

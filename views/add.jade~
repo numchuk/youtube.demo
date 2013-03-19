@@ -1,0 +1,6 @@
+h1 Add Task For To Do List!
+
+form(method="POST", action="/ToDo")
+  p Task:
+    input#item(type="text", name="item")
+  p: button(typde="submit") Add to List
